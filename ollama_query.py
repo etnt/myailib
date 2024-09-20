@@ -12,8 +12,8 @@ from rich.markdown import Markdown
 
 
 class OllamaQuerySystem:
-    def __init__(self, pdf_directory, model_name="qwen2.5-coder"):
-        self.pdf_db = PDFVectorDatabase(pdf_directory)
+    def __init__(self, pdf_directory, vector_db_directory, model_name="qwen2.5-coder"):
+        self.pdf_db = PDFVectorDatabase(pdf_directory, vector_db_directory)
         self.llm = Ollama(model=model_name)
         self.output_parser = DocumentMessageToString()
 
@@ -32,13 +32,7 @@ class OllamaQuerySystem:
         )
 
         query_chain = RunnableLambda(self.pdf_db.query_database) | self.output_parser
-        # self.llm_chain = LLMChain(llm=self.llm, prompt=self.prompt_template)
         self.llm_chain = {"context": query_chain, "question": RunnablePassthrough()} | self.prompt_template | self.llm
-
-        #self.qa_chain = (
-        #    {"context": self.pdf_db.query_database, "question": RunnablePassthrough()}
-        #    | self.llm_chain
-        #)
 
     def query(self, question):
         #return self.qa_chain.invoke(question)
@@ -47,10 +41,12 @@ class OllamaQuerySystem:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process PDF files and query a vector database.")
     parser.add_argument('--pdf-dir', type=str, required=True, help='Directory containing PDF files')
+    parser.add_argument('--vector-db-dir', type=str, help='Directory containing vector DB')
     args = parser.parse_args()
     pdf_directory = args.pdf_dir
+    vector_db_directory = args.vector_db_dir if args.vector_db_dir else None
 
-    qa_system = OllamaQuerySystem(pdf_directory)
+    qa_system = OllamaQuerySystem(pdf_directory, vector_db_directory)
     console = Console()
 
     print("\n")

@@ -1,6 +1,7 @@
 langchain
 langchain_core
 langchain-community
+langchain-chroma
 langchain-huggingface
 chromadb
 PyPDF2

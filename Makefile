@@ -7,7 +7,7 @@ REQUIREMENTS := requirements.txt
 
 # Default target
 .PHONY: all
-all: venv
+all: venv vector_db
 
 # Create virtual environment and install requirements
 .PHONY: venv
@@ -17,6 +17,9 @@ $(VENV_NAME)/bin/activate: $(REQUIREMENTS)
 	$(PYTHON) -m venv $(VENV_NAME)
 	$(PIP) install -r $(REQUIREMENTS)
 	touch $(VENV_NAME)/bin/activate
+
+vector_db:
+	mkdir vector_db
 
 # Clean up
 .PHONY: clean
@@ -31,7 +34,7 @@ add:
 
 .PHONY: install-requirements
 install-requirements: 
-	$(PIP) install -r $(REQUIREMENTS).PHONY: test
+	$(PIP) install -r $(REQUIREMENTS)
 
 test: venv
 	./venv/bin/$(PYTHON) -m unittest test_runnable_parsers.py
