@@ -52,10 +52,12 @@ if __name__ == "__main__":
     db = PDFVectorDatabase(pdf_directory)
 
     out_parser = DocumentMessageToString()
-    
+
     chain = RunnableLambda(db.query_database) | out_parser
 
     query = "What is Maagick?"
-    print(chain.invoke(query))
+
+    print(chain.invoke(query)) 
+    
     
     

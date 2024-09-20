@@ -6,5 +6,7 @@ chromadb
 PyPDF2
 tiktoken
 sentence-transformers
+rich
+
 
 
