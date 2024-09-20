@@ -1,6 +1,8 @@
 import os
 from PyPDF2 import PdfReader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from semantic_text_splitter import TextSplitter
+from tokenizers import Tokenizer
+from transformers import AutoTokenizer
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_core.runnables import RunnablePassthrough, RunnableLambda, RunnableParallel
@@ -14,8 +16,10 @@ class PDFVectorDatabase:
         self.vector_db = None
 
         # Initialize the text splitter and embeddings model
-        self.text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)                                          
-        self.embeddings_model = HuggingFaceEmbeddings()
+        self.max_tokens = 1000
+        self.tokenizer = Tokenizer.from_pretrained("bert-base-uncased")
+        self.splitter = TextSplitter.from_huggingface_tokenizer(self.tokenizer, self.max_tokens)
+        self.embeddings_model = HuggingFaceEmbeddings(model_name="bert-base-uncased")
 
         # Load PDFs and create chunks
         self._load_and_chunk_pdfs()
@@ -47,7 +51,7 @@ class PDFVectorDatabase:
                         page = reader.pages[page_num]
                         text = page.extract_text()
                         
-                        chunks = self.text_splitter.split_text(text)
+                        chunks = self.splitter.chunks(text)
                         self.all_chunks.extend(chunks)
         
         # Create the Chroma vector database
@@ -77,7 +81,7 @@ if __name__ == "__main__":
 
     chain = RunnableLambda(db.query_database) | out_parser
 
-    query = "What is foobar?"
+    query = "What is the Maagic API?"
 
     print(chain.invoke(query))
     
