@@ -13,7 +13,14 @@ This project implements a Python-based query system that allows users to ask que
 Example:
 
 ```bash
-  ./venv/bin/python3 ollama_query.py --pdf-dir ./PDFs
+  # Setup the Python environment
+  make
+
+  # Setup Ollama
+  ollama run qwen2.5-coder
+
+  # Start the program
+  ./venv/bin/python3 ollama_query.py --pdf-dir ./PDFs --vector-db-dir ./vector_db
 ```
 
 ## Components
