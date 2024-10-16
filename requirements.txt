@@ -8,6 +8,10 @@ PyPDF2
 tiktoken
 sentence-transformers
 rich
-
+promptic==0.7.5
+pydantic~=2.7
+google-generativeai~=0.6
+tenacity~=8.3
+nano-graphrag
 
 

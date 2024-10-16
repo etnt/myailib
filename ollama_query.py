@@ -6,9 +6,10 @@ from langchain_core.runnables import RunnablePassthrough, RunnableLambda
 from pdf_vdb import PDFVectorDatabase
 from runnable_parsers import DocumentMessageToString
 import argparse
-import textwrap
 from rich.console import Console
 from rich.markdown import Markdown
+from rich.panel import Panel
+from rich.text import Text
 
 
 class OllamaQuerySystem:
@@ -20,7 +21,9 @@ class OllamaQuerySystem:
         self.prompt_template = PromptTemplate(
             input_variables=["context", "question"],
             template="""
-            You are a helpful AI assistant. Use the following context to answer the question at the end.
+            You are a helpful AI assistant. You may use the following context to extend your knowledge
+            in order to aid you to answer the question at the end. Use a Chain of Thought process to
+            generate a response.
             If you don't know the answer, just say you don't know. Don't try to make up an answer.
 
             Context: {context}
@@ -37,6 +40,7 @@ class OllamaQuerySystem:
     def query(self, question):
         #return self.qa_chain.invoke(question)
         return self.llm_chain.invoke(question)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process PDF files and query a vector database.")
@@ -60,8 +64,13 @@ if __name__ == "__main__":
         # Join the list of answer strings into a single string
         answer_text = ''.join(answer)
 
-        # Use textwrap to format the text into a paragraph
-        #formatted_text = textwrap.fill(answer_text, width=80)
+        # Pretty print the input query
+        print("\n")
+        console.print(Panel.fit(
+            Text("Query: ", style="bold green") + Text(user_query, style="green"), 
+            title="Input Query",
+            border_style="green"
+        ))
 
         # Print the formatted text using rich for Markdown rendering
         print("Answer::\n")
